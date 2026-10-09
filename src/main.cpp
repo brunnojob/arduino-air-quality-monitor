@@ -11,6 +11,10 @@ void setup() {
 }
 void loop() {
   std::uint32_t now = millis();
+  auto watchdog = monitor.tick(now);
+  digitalWrite(ledPin, watchdog.state == AirState::Alert ||
+                               watchdog.state == AirState::Fault
+                           ? HIGH : LOW);
   if (std::uint32_t(now - lastSample) < 1000)
     return;
   lastSample = now;

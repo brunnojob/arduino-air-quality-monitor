@@ -32,8 +32,15 @@ class AirMonitor {
 public:
   explicit AirMonitor(AirConfig c = {}) : config_(c) {
     if (c.reset < 0 || c.trip > 4095 || c.reset >= c.trip ||
-        !c.confirmationMs || !c.maxGapMs)
+        !c.confirmationMs || !c.maxGapMs ||
+        c.warmupMs >= 0x80000000U || c.confirmationMs >= 0x80000000U ||
+        c.maxGapMs >= 0x80000000U)
       throw std::invalid_argument("invalid air thresholds");
+  }
+  AirStatus tick(std::uint32_t now) {
+    if (initialized_ && std::uint32_t(now - last_) > config_.maxGapMs)
+      change(AirState::Fault);
+    return snapshot();
   }
   AirStatus sample(int raw, std::uint32_t now) {
     raw_ = raw;
