@@ -1,7 +1,29 @@
-# arduino-air-quality-monitor
+# Air Quality Monitor
 
-ESP32 indoor air monitor for an analog gas sensor. Reports raw and moving-average ADC readings over serial and lights an alert LED above a configurable threshold. Calibrate for the sensor and environment; this is not a certified safety alarm.
+Monitor ADC com janela móvel, variância, aquecimento, confirmação de limiar, histerese e identificação de falha de sensor.
 
-Requires PlatformIO Core. Run `pio run` to build and `pio run -t upload` to flash the ESP32 DevKit. Sensor: GPIO35; LED: GPIO2; serial: 115200 baud.
+## Executar
 
-Project by [Brunno Dev](https://brunnodev.store).
+Requisitos: ESP32, C++17 e PlatformIO.
+
+```sh
+pio run -e esp32dev
+pio run -e esp32dev -t upload
+python -m pip install -r cloud/requirements.txt
+python cloud/serial_bridge.py /dev/ttyUSB0
+```
+
+## Funcionamento
+
+ADC: GPIO 35. Indicador: GPIO 2. Aquecimento inicial de 60 segundos. Valores são leituras ADC e não concentrações certificadas de gases. A lógica pura está em `include/air_monitor.hpp`; calibração depende do sensor utilizado.
+
+## Persistência de resultados
+
+O arquivo de operações está em [vercel-home-telemetry-api.vercel.app](https://vercel-home-telemetry-api.vercel.app/laboratory.html?project=arduino-air-quality-monitor). As migrações Supabase estão no [repositório da API](https://github.com/brunnojob/vercel-home-telemetry-api/tree/main/supabase/migrations).
+
+```sh
+python cloud/sync.py enqueue resultado.json --project arduino-air-quality-monitor
+python cloud/sync.py sync
+```
+
+Defina `BRUNNODEV_ACCESS_TOKEN` com sua sessão. A fila SQLite conserva os relatórios até confirmação do servidor; o mesmo conteúdo não gera registros duplicados. Tokens não são gravados no código.

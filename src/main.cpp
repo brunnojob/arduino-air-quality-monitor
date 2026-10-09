@@ -1,21 +1,27 @@
+#include "air_monitor.hpp"
 #include <Arduino.h>
-
-constexpr uint8_t sensorPin=35, ledPin=2;
-constexpr int alertLevel=1800;
-constexpr uint8_t windowSize=8;
-int readings[windowSize]={0}; uint8_t cursor=0, count=0; long sum=0;
-
+constexpr int sensorPin = 35, ledPin = 2;
+AirMonitor monitor;
+std::uint32_t lastSample = 0, sequence = 0;
 void setup() {
-  pinMode(ledPin,OUTPUT); Serial.begin(115200);
-  for(auto &v:readings)v=analogRead(sensorPin);
-  sum=0;
+  pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, LOW);
+  analogReadResolution(12);
+  Serial.begin(115200);
 }
 void loop() {
-  int raw=analogRead(sensorPin);
-  sum-=readings[cursor]; readings[cursor]=raw; sum+=raw;
-  cursor=(cursor+1)%windowSize; if(count<windowSize)count++;
-  int avg=sum/count; bool alert=avg>=alertLevel;
-  digitalWrite(ledPin,alert?HIGH:LOW);
-  Serial.printf("{\"adc\":%d,\"average\":%d,\"alert\":%s}\n",raw,avg,alert?"true":"false");
-  delay(1000);
+  std::uint32_t now = millis();
+  if (std::uint32_t(now - lastSample) < 1000)
+    return;
+  lastSample = now;
+  auto result = monitor.sample(analogRead(sensorPin), now);
+  digitalWrite(ledPin, result.state == AirState::Alert ||
+                               result.state == AirState::Fault
+                           ? HIGH
+                           : LOW);
+  Serial.printf("{\"deviceId\":\"air-01\",\"sequence\":%lu,\"timestampMs\":%lu,"
+                "\"adc\":%d,\"average\":%.2f,\"variance\":%.2f,\"state\":%d}\n",
+                static_cast<unsigned long>(++sequence),
+                static_cast<unsigned long>(now), result.raw, result.average,
+                result.variance, int(result.state));
 }
