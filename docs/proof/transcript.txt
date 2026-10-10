@@ -100,7 +100,7 @@ Collecting bitarray<4.0,>=3.0.0 (from bitstring~=4.3.1)
 Collecting pycparser (from cffi>=1.14->cryptography~=45.0.3)
   Downloading pycparser-3.11-py3-none-any.whl.metadata (8.2 kB)
 Downloading cryptography-45.0.7-cp311-abi3-manylinux_2_34_x86_64.whl (4.5 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 51.2 MB/s  0:00:00
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 101.5 MB/s  0:00:00
 Downloading ecdsa-0.19.2-py2.py3-none-any.whl (150 kB)
 Downloading bitstring-4.3.1-py3-none-any.whl (71 kB)
 Downloading reedsolo-1.7.0-py3-none-any.whl (32 kB)
@@ -111,7 +111,7 @@ Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
 Downloading pycparser-3.11-py3-none-any.whl (51 kB)
 Installing collected packages: reedsolo, intelhex, six, pycparser, bitarray, ecdsa, cffi, bitstring, cryptography
 
-Successfully installed bitarray-3.12.0 bitstring-4.3.1 cffi-2.1.1 cryptogra
+Successfully installed bitarray-3.12.0 bitstring-4.3.1 cffi-2.1.1 cryptogr
 Full transcript in the execution-proof artifact.
 $ bash -e -o pipefail -c python -m unittest discover -v -s cloud
 test_confirmed_receipt_marks_the_report_sent (test_receipts.ReceiptTests.test_confirmed_receipt_marks_the_report_sent) ... ok
@@ -122,7 +122,7 @@ test_conflicting_key_cannot_overwrite_a_report (test_sync.OutboxTests.test_confl
 test_retries_keep_reports_until_confirmed (test_sync.OutboxTests.test_retries_keep_reports_until_confirmed) ... ok
 
 ----------------------------------------------------------------------
-Ran 6 tests in 0.075s
+Ran 6 tests in 0.067s
 
 OK
 
